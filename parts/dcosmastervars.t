@@ -55,6 +55,7 @@
 {{if .MasterProfile.IsStorageAccount}}
     "masterStorageAccountName": "[concat(variables('storageAccountBaseName'), 'mstr0')]",
 {{end}}
+    "apiVersionVMSSMultiIPConfig": "2017-03-30", 
 {{if .MasterProfile.IsCustomVNET}}
     "masterVnetSubnetID": "[parameters('masterVnetSubnetID')]",
 {{else}}

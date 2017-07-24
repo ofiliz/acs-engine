@@ -76,7 +76,7 @@
 {{end}}
     {
 {{if .IsManagedDisks}}
-      "apiVersion": "[variables('apiVersionStorageManagedDisks')]",
+      "apiVersion": "[variables('apiVersionVMSSMultiIPConfig')]",
 {{else}}
       "apiVersion": "[variables('apiVersionDefault')]",
 {{end}}
@@ -119,21 +119,27 @@
                   },
 {{end}}
                   "ipConfigurations": [
+                    {{range $seq := loop 1 10}}
                     {
-                      "name": "nicipconfig",
+                      "name": "nicipconfig{{$seq}}",
                       "properties": {
-{{if IsPublic .Ports}}
+                        {{if eq $seq 1}}
+                        "primary": true,
+                        {{end}}
+{{if IsPublic $.Ports}}
                         "loadBalancerBackendAddressPools": [
                           {
-                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('{{.Name}}LbName'), '/backendAddressPools/',variables('{{.Name}}LbBackendPoolName'))]"
+                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('{{$.Name}}LbName'), '/backendAddressPools/',variables('{{$.Name}}LbBackendPoolName'))]"
                           }
                         ],
 {{end}}
                         "subnet": {
-                          "id": "[variables('{{.Name}}VnetSubnetID')]"
+                          "id": "[variables('{{$.Name}}VnetSubnetID')]"
                         }
                       }
                     }
+                    {{if lt $seq 10}},{{end}}
+                    {{end}}
                   ],
                   "primary": "true"
                 }
